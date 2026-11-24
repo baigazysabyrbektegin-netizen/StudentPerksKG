@@ -43,7 +43,10 @@ $currentUser = function_exists('current_user') ? current_user() : null;
                 </div>
                 <a class="button button-small button-dark" href="logout.php">Log out</a>
             <?php else: ?>
-                <a class="button button-small button-dark" href="login.php">Sign in</a>
+                <div class="auth-actions">
+                    <a class="auth-login <?= $activePage === 'login' ? 'active' : '' ?>" href="login.php">Log in</a>
+                    <a class="button button-small button-dark <?= $activePage === 'register' ? 'active' : '' ?>" href="register.php">Sign up</a>
+                </div>
             <?php endif; ?>
         </nav>
     </div>

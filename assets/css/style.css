@@ -96,6 +96,10 @@ button, input { font: inherit; }
 .user-name { color: var(--ink); font-size: 12px; font-weight: 700; line-height: 1.1; }
 .user-role { color: #5e9a7b; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; }
 .nav-submit, .nav-admin { color: #4e806a; font-weight: 700; }
+.auth-actions { display: flex; align-items: center; gap: 8px; }
+.auth-login { padding: 9px 10px; color: var(--ink); font-size: 13px; font-weight: 700; }
+.auth-login:hover, .auth-login.active { color: #4e806a; }
+.auth-actions .button.active { box-shadow: 0 0 0 3px #d9f4e5; }
 .submission-layout { display: grid; grid-template-columns: 1.45fr .55fr; gap: 24px; align-items: start; }
 .submission-form, .submission-guide { padding: 26px; border: 1px solid var(--line); border-radius: 9px; background: white; }
 .submission-form { display: grid; gap: 17px; }
@@ -286,6 +290,8 @@ h1 em, .cta-section em { color: #55b986; font-style: normal; }
     .main-nav.is-open { display: flex; }
     .main-nav a { padding: 11px 4px; }
     .main-nav .button { margin-top: 5px; }
+    .auth-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .auth-actions .button { margin-top: 0; }
     .hero-grid { display: block; padding: 65px 0 35px; }
     .hero-content { max-width: 530px; }
     .hero-visual { min-height: 360px; margin-top: 20px; transform: scale(.88); }

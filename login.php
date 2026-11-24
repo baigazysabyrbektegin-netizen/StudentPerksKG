@@ -10,6 +10,7 @@ if (is_logged_in()) {
 }
 
 $pageTitle = 'Sign in — StudentPerks KG';
+$activePage = 'login';
 $error = '';
 $email = trim((string) ($_POST['email'] ?? ''));
 $redirect = redirect_after_login();

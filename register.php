@@ -10,6 +10,7 @@ if (is_logged_in()) {
 }
 
 $pageTitle = 'Create account — StudentPerks KG';
+$activePage = 'register';
 $errors = [];
 $name = trim((string) ($_POST['name'] ?? ''));
 $email = trim((string) ($_POST['email'] ?? ''));
