@@ -33,6 +33,14 @@ $currentUser = function_exists('current_user') ? current_user() : null;
             <a class="<?= $activePage === 'about' ? 'active' : '' ?>" href="about.php">About us</a>
             <a class="nav-saved" href="saved.php"><span class="heart-icon" aria-hidden="true">♡</span> Saved</a>
             <?php if ($currentUser): ?>
+                <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
+                    <a href="admin/index.php" class="nav-admin">Admin panel</a>
+                <?php endif; ?>
+                <a href="submit.php" class="nav-submit">Submit</a>
+                <div class="user-menu" aria-label="Current user">
+                    <span class="user-name"><?= htmlspecialchars($currentUser['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="user-role"><?= $currentUser['role'] === 'admin' ? 'Admin' : 'Student' ?></span>
+                </div>
                 <a class="button button-small button-dark" href="logout.php">Log out</a>
             <?php else: ?>
                 <a class="button button-small button-dark" href="login.php">Sign in</a>

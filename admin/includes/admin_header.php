@@ -22,6 +22,7 @@ require_admin();
             <a href="index.php">Benefits</a>
             <a href="categories.php">Categories</a>
             <a href="reports.php">Reports</a>
+            <a href="submissions.php">Suggestions</a>
             <a class="button button-small button-dark" href="../logout.php">Log out</a>
         </nav>
     </div>

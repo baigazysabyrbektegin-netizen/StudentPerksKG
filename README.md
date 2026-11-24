@@ -32,3 +32,12 @@ UPDATE users SET role = 'admin' WHERE email = 'your-local-admin@example.com';
 ```
 
 Use a unique local password and remove or change administrator access when testing is complete.
+
+## Student submissions
+
+Logged-in users can submit feedback from `submit.php`. The form supports two submission types:
+
+- **Suggestion:** includes a benefit title, provider, category, benefit type, description, and official provider link.
+- **Complaint:** includes a description and the benefit being reported.
+
+Administrators review submissions at `admin/submissions.php`. A suggestion can be approved directly into the `benefits` table. Complaints can be marked as reviewed or rejected. Submitted offers begin with `needs_verification` availability.

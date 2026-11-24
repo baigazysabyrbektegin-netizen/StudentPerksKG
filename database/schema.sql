@@ -75,6 +75,32 @@ CREATE TABLE IF NOT EXISTS benefit_reports (
     INDEX idx_reports_status (status)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS benefit_submissions (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    submission_type ENUM('suggestion', 'complaint') NOT NULL,
+    title VARCHAR(180) NULL,
+    provider VARCHAR(120) NULL,
+    category_id INT UNSIGNED NULL,
+    benefit_type ENUM('free', 'discounted', 'premium', 'trial') NULL,
+    benefit_id INT UNSIGNED NULL,
+    description TEXT NOT NULL,
+    official_url VARCHAR(500) NULL,
+    status ENUM('pending', 'reviewing', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+    admin_note TEXT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_submission_user FOREIGN KEY (user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_submission_category FOREIGN KEY (category_id) REFERENCES categories(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_submission_benefit FOREIGN KEY (benefit_id) REFERENCES benefits(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    INDEX idx_submission_type (submission_type),
+    INDEX idx_submission_status (status),
+    INDEX idx_submission_created (created_at)
+) ENGINE=InnoDB;
+
 INSERT INTO categories (name, slug, description) VALUES
     ('Software & developer tools', 'software', 'Professional software, developer tools, hosting, and cloud credits.'),
     ('AI & productivity', 'productivity', 'Tools for research, writing, notes, organization, and collaboration.'),

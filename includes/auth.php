@@ -35,7 +35,7 @@ function require_login(): void
 {
     if (!is_logged_in()) {
         $redirect = $_SERVER['REQUEST_URI'] ?? 'saved.php';
-        header('Location: login.php?redirect=' . urlencode($redirect));
+        header('Location: /login.php?redirect=' . urlencode($redirect));
         exit;
     }
 }
