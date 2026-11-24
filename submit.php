@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$categoryId) {
             $errors[] = 'Choose a category.';
         }
-        if (!in_array($benefitType, ['free', 'discounted', 'premium', 'trial'], true)) {
+        if (!in_array($benefitType, ['free', 'discounted', 'premium', 'trial', 'event'], true)) {
             $errors[] = 'Choose a valid benefit type.';
         }
         if (!filter_var($officialUrl, FILTER_VALIDATE_URL)) {
@@ -105,7 +105,7 @@ require __DIR__ . '/includes/header.php';
                     </div>
                     <div class="admin-form-grid">
                         <label>Category<select name="category_id"><option value="">Choose category</option><?php foreach ($categories as $category): ?><option value="<?= (int) $category['id'] ?>" <?= (string) $categoryId === (string) $category['id'] ? 'selected' : '' ?>><?= htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></label>
-                        <label>Benefit type<select name="benefit_type"><option value="free" <?= $benefitType === 'free' ? 'selected' : '' ?>>Free</option><option value="discounted" <?= $benefitType === 'discounted' ? 'selected' : '' ?>>Discounted</option><option value="premium" <?= $benefitType === 'premium' ? 'selected' : '' ?>>Premium</option><option value="trial" <?= $benefitType === 'trial' ? 'selected' : '' ?>>Free trial</option></select></label>
+                        <label>Benefit type<select name="benefit_type"><option value="free" <?= $benefitType === 'free' ? 'selected' : '' ?>>Free</option><option value="discounted" <?= $benefitType === 'discounted' ? 'selected' : '' ?>>Discounted</option><option value="premium" <?= $benefitType === 'premium' ? 'selected' : '' ?>>Premium</option><option value="trial" <?= $benefitType === 'trial' ? 'selected' : '' ?>>Free trial</option><option value="event" <?= $benefitType === 'event' ? 'selected' : '' ?>>Event</option></select></label>
                     </div>
                     <label>Official link<input type="url" name="official_url" maxlength="500" value="<?= htmlspecialchars($officialUrl, ENT_QUOTES, 'UTF-8') ?>" placeholder="https://official-provider.example/student-offer"></label>
                 </div>

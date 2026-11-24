@@ -33,6 +33,7 @@ $currentUser = function_exists('current_user') ? current_user() : null;
             <a class="<?= $activePage === 'about' ? 'active' : '' ?>" href="about.php">About us</a>
             <a class="nav-saved" href="saved.php"><span class="heart-icon" aria-hidden="true">♡</span> Saved</a>
             <?php if ($currentUser): ?>
+                <a href="schedule.php">My schedule</a>
                 <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
                     <a href="admin/index.php" class="nav-admin">Admin panel</a>
                 <?php endif; ?>

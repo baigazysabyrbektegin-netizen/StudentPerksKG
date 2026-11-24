@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(190) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('student', 'admin') NOT NULL DEFAULT 'student',
+    expiry_email_notifications TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_users_role (role)
 ) ENGINE=InnoDB;
@@ -29,7 +30,7 @@ CREATE TABLE IF NOT EXISTS benefits (
     provider VARCHAR(120) NOT NULL,
     description TEXT NOT NULL,
     category_id INT UNSIGNED NOT NULL,
-    benefit_type ENUM('free', 'discounted', 'premium', 'trial') NOT NULL,
+    benefit_type ENUM('free', 'discounted', 'premium', 'trial', 'event') NOT NULL,
     eligibility_requirements TEXT NOT NULL,
     kyrgyzstan_status ENUM('confirmed', 'needs_verification', 'not_available') NOT NULL DEFAULT 'needs_verification',
     verification_requirements TEXT NOT NULL,
@@ -61,6 +62,21 @@ CREATE TABLE IF NOT EXISTS saved_benefits (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS user_registrations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    benefit_id INT UNSIGNED NOT NULL,
+    started_on DATE NOT NULL,
+    ends_on DATE NULL,
+    reminder_sent_at DATETIME NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_user_registration (user_id, benefit_id),
+    INDEX idx_registration_expiry (ends_on, reminder_sent_at),
+    CONSTRAINT fk_registration_user FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_registration_benefit FOREIGN KEY (benefit_id) REFERENCES benefits(id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS benefit_reports (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     benefit_id INT UNSIGNED NOT NULL,
@@ -82,7 +98,7 @@ CREATE TABLE IF NOT EXISTS benefit_submissions (
     title VARCHAR(180) NULL,
     provider VARCHAR(120) NULL,
     category_id INT UNSIGNED NULL,
-    benefit_type ENUM('free', 'discounted', 'premium', 'trial') NULL,
+    benefit_type ENUM('free', 'discounted', 'premium', 'trial', 'event') NULL,
     benefit_id INT UNSIGNED NULL,
     description TEXT NOT NULL,
     official_url VARCHAR(500) NULL,

@@ -23,6 +23,12 @@ The default local connection expects MySQL at `127.0.0.1`, database `studentperk
 
 The authentication, saved benefits, benefit details, reporting, and admin dashboard are included in the current implementation.
 
+## Customer schedule and expiry emails
+
+For an existing database, run `database/customer_functionality_migration.sql` once. A fresh install gets these tables and fields from `database/schema.sql`. Students can save any listing, including events, and add it to `schedule.php` with start and end dates. Admins can list events by choosing the **Event** benefit type.
+
+To send opt-in expiry emails, configure PHP mail delivery on the host (for example, SMTP through the host's PHP mail setup), set `MAIL_FROM` and `APP_URL`, then schedule `php scripts/send_expiry_reminders.php` to run daily. On Windows Task Scheduler, run it once each morning with the PHP executable as the program and the script's absolute path as its argument. The script records successful sends so each registration gets at most one reminder.
+
 ## Creating an administrator
 
 Do not hardcode a production administrator password. After importing the schema, create a normal account through `register.php`, then promote that account locally from phpMyAdmin:

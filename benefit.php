@@ -53,6 +53,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && is_logged_in()) {
             $remove = $pdo->prepare('DELETE FROM saved_benefits WHERE user_id = :user_id AND benefit_id = :benefit_id');
             $remove->execute([':user_id' => current_user()['id'], ':benefit_id' => $benefit['id']]);
             $saveMessage = 'Benefit removed from your collection.';
+        } elseif ($saveAction === 'register') {
+            $startedOn = (string) ($_POST['started_on'] ?? '');
+            $endsOn = trim((string) ($_POST['ends_on'] ?? ''));
+            $validStart = DateTime::createFromFormat('Y-m-d', $startedOn);
+            $validEnd = $endsOn === '' ? true : DateTime::createFromFormat('Y-m-d', $endsOn);
+            if (!$validStart || ($endsOn !== '' && (!$validEnd || $endsOn < $startedOn))) {
+                $saveMessage = 'Enter valid dates. The end date must be on or after the start date.';
+            } else {
+                $register = $pdo->prepare('INSERT INTO user_registrations (user_id, benefit_id, started_on, ends_on) VALUES (:user_id, :benefit_id, :started_on, :ends_on) ON DUPLICATE KEY UPDATE started_on = VALUES(started_on), ends_on = VALUES(ends_on), reminder_sent_at = NULL');
+                $register->execute([':user_id' => current_user()['id'], ':benefit_id' => $benefit['id'], ':started_on' => $startedOn, ':ends_on' => $endsOn !== '' ? $endsOn : null]);
+                $saveMessage = 'Added to your schedule.';
+            }
         }
     }
 }
@@ -63,10 +75,14 @@ $statusLabels = [
 ];
 $availability = $statusLabels[$benefit['kyrgyzstan_status']] ?? $statusLabels['needs_verification'];
 $isSaved = false;
+$registration = false;
 if (is_logged_in()) {
     $savedCheck = $pdo->prepare('SELECT 1 FROM saved_benefits WHERE user_id = :user_id AND benefit_id = :benefit_id');
     $savedCheck->execute([':user_id' => current_user()['id'], ':benefit_id' => $benefit['id']]);
     $isSaved = (bool) $savedCheck->fetchColumn();
+    $registrationCheck = $pdo->prepare('SELECT started_on, ends_on FROM user_registrations WHERE user_id = :user_id AND benefit_id = :benefit_id');
+    $registrationCheck->execute([':user_id' => current_user()['id'], ':benefit_id' => $benefit['id']]);
+    $registration = $registrationCheck->fetch();
 }
 
 require __DIR__ . '/includes/header.php';
@@ -83,6 +99,7 @@ require __DIR__ . '/includes/header.php';
                     <div class="detail-tags"><span class="tag tag-green"><?= htmlspecialchars(ucfirst($benefit['benefit_type']), ENT_QUOTES, 'UTF-8') ?></span><span><?= htmlspecialchars($benefit['category_name'], ENT_QUOTES, 'UTF-8') ?></span></div>
                     <p class="detail-description"><?= htmlspecialchars($benefit['description'], ENT_QUOTES, 'UTF-8') ?></p>
                     <a class="button button-dark detail-claim" href="<?= htmlspecialchars($benefit['official_url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">Visit official website <span>↗</span></a>
+                    <?php if (is_logged_in()): ?><form method="post" class="registration-form"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="save_action" value="register"><h2><?= $registration ? 'Update your schedule entry' : 'Add to your schedule' ?></h2><label>Start / registration date<input type="date" name="started_on" value="<?= htmlspecialchars($registration['started_on'] ?? date('Y-m-d'), ENT_QUOTES, 'UTF-8') ?>" required></label><label>End / expiry date<input type="date" name="ends_on" value="<?= htmlspecialchars($registration['ends_on'] ?? '', ENT_QUOTES, 'UTF-8') ?>"></label><button class="button button-dark" type="submit">Save dates</button></form><?php else: ?><p><a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI'] ?? 'benefit.php') ?>">Sign in</a> to add this opportunity to your schedule.</p><?php endif; ?>
                 </article>
                 <aside class="detail-aside">
                     <div class="verification-panel"><?php if ($saveMessage !== ''): ?><div class="notice" role="status"><?= htmlspecialchars($saveMessage, ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?><span class="section-kicker">AVAILABILITY IN KG</span><div class="availability <?= htmlspecialchars($availability[1], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($availability[0], ENT_QUOTES, 'UTF-8') ?></div><p>We do not assume an offer is available in Kyrgyzstan until its regional terms have been checked.</p></div>

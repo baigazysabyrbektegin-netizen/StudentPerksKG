@@ -1,0 +1,1 @@
+ALTER TABLE benefits MODIFY benefit_type ENUM('free', 'discounted', 'premium', 'trial', 'event') NOT NULL;studentperks_kgbenefits
