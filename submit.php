@@ -15,12 +15,10 @@ $title = trim((string) ($_POST['title'] ?? ''));
 $provider = trim((string) ($_POST['provider'] ?? ''));
 $categoryId = filter_var($_POST['category_id'] ?? null, FILTER_VALIDATE_INT);
 $benefitType = $_POST['benefit_type'] ?? 'free';
-$benefitId = filter_var($_POST['benefit_id'] ?? null, FILTER_VALIDATE_INT);
 $description = trim((string) ($_POST['description'] ?? ''));
 $officialUrl = trim((string) ($_POST['official_url'] ?? ''));
 
 $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name')->fetchAll();
-$benefits = $pdo->query('SELECT id, title FROM benefits ORDER BY title')->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
@@ -49,8 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!filter_var($officialUrl, FILTER_VALIDATE_URL)) {
             $errors[] = 'Enter a valid official website link.';
         }
-    } elseif (!$benefitId) {
-        $errors[] = 'Choose the benefit this complaint concerns.';
     }
 
     if ($errors === []) {
@@ -66,13 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':provider' => $submissionType === 'suggestion' ? $provider : null,
             ':category_id' => $submissionType === 'suggestion' ? $categoryId : null,
             ':benefit_type' => $submissionType === 'suggestion' ? $benefitType : null,
-            ':benefit_id' => $submissionType === 'complaint' ? $benefitId : null,
+            ':benefit_id' => null,
             ':description' => $description,
             ':official_url' => $submissionType === 'suggestion' ? $officialUrl : null,
         ]);
         $success = 'Your submission was sent to the StudentPerks admin team.';
         $title = $provider = $officialUrl = $description = '';
-        $categoryId = $benefitId = null;
+        $categoryId = null;
     }
 }
 
@@ -109,11 +105,8 @@ require __DIR__ . '/includes/header.php';
                     </div>
                     <label>Official link<input type="url" name="official_url" maxlength="500" value="<?= htmlspecialchars($officialUrl, ENT_QUOTES, 'UTF-8') ?>" placeholder="https://official-provider.example/student-offer"></label>
                 </div>
-                <div class="complaint-fields">
-                    <label>Which benefit is involved?<select name="benefit_id"><option value="">Choose benefit</option><?php foreach ($benefits as $benefit): ?><option value="<?= (int) $benefit['id'] ?>" <?= (string) $benefitId === (string) $benefit['id'] ? 'selected' : '' ?>><?= htmlspecialchars($benefit['title'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></label>
-                </div>
-                <label>Description<textarea name="description" rows="7" maxlength="2000" required placeholder="Explain why this benefit should be added, or describe the problem in detail."><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea></label>
-                <button class="button button-dark" type="submit">Send to administrators</button>
+                <label><span class="submission-message-label">Tell us about this opportunity</span><textarea name="description" rows="7" maxlength="2000" required placeholder="Explain why this benefit should be added."><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea></label>
+                <button class="button button-dark" type="submit"><span class="submission-button-label">Send suggestion</span></button>
             </form>
             <aside class="submission-guide"><span class="section-kicker">SUGGESTION TEMPLATE</span><h2>Include these details</h2><ul><li>Benefit title and provider</li><li>The correct category</li><li>Whether it is free, discounted, premium, or a trial</li><li>An official provider link</li><li>A short explanation</li></ul><p>StudentPerks administrators will verify availability before publishing a submitted benefit.</p></aside>
         </div>
